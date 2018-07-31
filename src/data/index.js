@@ -23,8 +23,21 @@ class data {
     return this.applicants
   }
 
-  getJobCount(position){
-    return this.applicants.filter(a => a.job_id == position).length
+  getUniqueSkills(){
+    return skills.map(s => s.name).reverse().filter(function (e, i, arr) {
+        return arr.indexOf(e, i+1) === -1;
+    }).reverse()
+  }
+
+  getJobRowspan(position){
+    var i = 0
+    for(var x in this.applicants){
+      var applicant = this.applicants[x]
+      if(applicant.job_id != position)
+        continue
+      i += applicant.skills.length
+    }
+    return i
   }
 
 }

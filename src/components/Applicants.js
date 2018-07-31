@@ -5,20 +5,27 @@ var last = null
 function Row({applicant}){
   var showJob = applicant.job_id != last
   last = applicant.job_id
-  return <tr>
-        {showJob ? <td rowSpan={dataset.getJobCount(applicant.job_id)} className="job-name">{applicant.job.name}</td> : []}
-        <td className="applicant-name">{applicant.name}</td>
-        <td>
-          <a href="mailto:{applicant.email}">{applicant.email}</a>
-        </td>
-        <td>
-          <a href="{applicant.website}" target="_blank">{applicant.website}</a>
-        </td>
-        <td>
-          {applicant.skills.map(s => s.name).join(", ")}
-        </td>
-        <td>{applicant.cover_letter}</td>
-  </tr>
+  var ret = [<tr>
+          {showJob ? <td rowSpan={dataset.getJobRowspan(applicant.job_id)} className="job-name">{applicant.job.name}</td> : []}
+          <td rowSpan={applicant.skills.length} className="applicant-name">{applicant.name}</td>
+          <td rowSpan={applicant.skills.length}>
+            <a href="mailto:{applicant.email}">{applicant.email}</a>
+          </td>
+          <td rowSpan={applicant.skills.length}>
+            <a href="{applicant.website}" target="_blank">{applicant.website}</a>
+          </td>
+          <td>
+            {applicant.skills[0].name}
+          </td>
+          <td rowSpan={applicant.skills.length}>{applicant.cover_letter}</td>
+    </tr>]
+
+    for(var x in applicant.skills)
+      if(x > 0)
+        ret.push(<tr>
+          <td>{applicant.skills[x].name}</td>
+          </tr>)
+    return ret
 }
 
 class Applicants extends Component {
@@ -53,6 +60,11 @@ class Applicants extends Component {
         <tbody>
           {this.renderRows()}
         </tbody>
+        <tfooter>
+          <tr>
+            <td colspan="6">{this.applicants.length} Applicants, {dataset.getUniqueSkills().length} Unique Skills</td>
+          </tr>
+        </tfooter>
       </table>
     );
   }
